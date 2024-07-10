@@ -26,23 +26,25 @@ import javafx.stage.Stage;
 import model.entities.Department;
 import model.services.DepartmentService;
 
-public class DepartmentListController implements Initializable{
-	
+public class DepartmentListController implements Initializable {
+
 	private DepartmentService service;
 	
 	@FXML
 	private TableView<Department> tableViewDepartment;
+	
 	@FXML
 	private TableColumn<Department, Integer> tableColumnId;
+	
 	@FXML
 	private TableColumn<Department, String> tableColumnName;
 	
 	@FXML
-	private Button bt;
+	private Button btNew;
 	
 	private ObservableList<Department> obsList;
 	
-	@FXML 
+	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
 		Department obj = new Department();
@@ -54,23 +56,22 @@ public class DepartmentListController implements Initializable{
 	}
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
 	}
 
 	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-	
+		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewDepartment.prefHeightProperty().bind(stage.heightProperty());
 	}
-
+	
 	public void updateTableView() {
 		if (service == null) {
 			throw new IllegalStateException("Service was null");
 		}
-		
 		List<Department> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
 		tableViewDepartment.setItems(obsList);
@@ -83,6 +84,7 @@ public class DepartmentListController implements Initializable{
 			
 			DepartmentFormController controller = loader.getController();
 			controller.setDepartment(obj);
+			controller.setDepartmentService(new DepartmentService());
 			controller.updateFormData();
 			
 			Stage dialogStage = new Stage();
@@ -92,7 +94,8 @@ public class DepartmentListController implements Initializable{
 			dialogStage.initOwner(parentStage);
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
-		}catch (IOException e) {
+		}
+		catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
 	}
